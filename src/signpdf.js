@@ -16,7 +16,7 @@ export class SignPdf {
 
     sign(
         pdfBuffer,
-        p12Buffer,
+        p12Object,
         additionalOptions = {},
     ) {
         const options = {
@@ -28,12 +28,6 @@ export class SignPdf {
         if (!(pdfBuffer instanceof Buffer)) {
             throw new SignPdfError(
                 'PDF expected as Buffer.',
-                SignPdfError.TYPE_INPUT,
-            );
-        }
-        if (!(p12Buffer instanceof Buffer)) {
-            throw new SignPdfError(
-                'p12 certificate expected as Buffer.',
                 SignPdfError.TYPE_INPUT,
             );
         }
@@ -80,13 +74,7 @@ export class SignPdf {
         ]);
 
         // Convert Buffer P12 to a forge implementation.
-        const forgeCert = forge.util.createBuffer(p12Buffer.toString('binary'));
-        const p12Asn1 = forge.asn1.fromDer(forgeCert);
-        const p12 = forge.pkcs12.pkcs12FromAsn1(
-            p12Asn1,
-            options.asn1StrictParsing,
-            options.passphrase,
-        );
+        const p12 = p12Object
 
         // Extract safe bags by type.
         // We will need all the certificates and the private key.
